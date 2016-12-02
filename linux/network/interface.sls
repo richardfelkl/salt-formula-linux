@@ -45,7 +45,7 @@ ovs_port_{{ interface_name }}:
     - openvswitch_bridge: ovs_bridge_{{ interface.bridge }}
 #}
 
-linux_interfaces_include:
+linux_interfaces_include_{{interface_name }}:
   file.prepend:
   - name: /etc/network/interfaces
   - text: 'source /etc/network/interfaces.d/*'
