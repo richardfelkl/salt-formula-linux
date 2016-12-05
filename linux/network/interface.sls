@@ -235,7 +235,7 @@ linux_network_{{ interface_name }}_routes:
 
 {%- set interface_name = interface.get('name', interface_name) %}
 
-{%- if interface.type == 'ovs_port' %}
+{%- if interface.type == 'ovs_port' or if interface.type == 'ovs_bridge' %}
 
 ovs_port_{{ interface_name }}_line1:
   file.replace:
@@ -246,7 +246,7 @@ ovs_port_{{ interface_name }}_line1:
 ovs_port_{{ interface_name }}_line2:
   file.replace:
   - name: /etc/network/interfaces
-  - pattern: iface {{ interface_name }} inet static
+  - pattern: iface {{ interface_name }} inet {{ interface.proto }}
   - repl: ""
 
 {%- endif %}
