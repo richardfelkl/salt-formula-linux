@@ -104,6 +104,9 @@ linux_interface_{{ interface_name }}:
   {%- if interface.name_servers is defined %}
   - dns: {{ interface.name_servers }}
   {%- endif %}
+  {%- if interface.bond-master is defined %}
+  - bond-master: {{ interface.bond-master }}
+  {%- endif %}
   {%- if interface.wireless is defined and grains.os_family == 'Debian' %}
   {%- if interface.wireless.security == "wpa" %}
   - wpa-ssid: {{ interface.wireless.essid }}
@@ -235,7 +238,7 @@ linux_network_{{ interface_name }}_routes:
 
 {%- set interface_name = interface.get('name', interface_name) %}
 
-{%- if interface.type == 'ovs_port' or if interface.type == 'ovs_bridge' %}
+{%- if interface.type == 'ovs_port' or interface.type == 'ovs_bridge' %}
 
 ovs_port_{{ interface_name }}_line1:
   file.replace:
