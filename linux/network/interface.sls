@@ -66,19 +66,8 @@ ovs_port_{{ interface_name }}:
       port: {{ interface|yaml }}
       port_name: {{ interface_name }}
   - template: jinja
+
 {#
-ovs_port_{{ interface_name }}_line1:
-  file.replace:
-  - name: /etc/network/interfaces
-  - pattern: auto {{ interface_name }}
-  - repl: ""
-
-ovs_port_{{ interface_name }}_line2:
-  file.replace:
-  - name: /etc/network/interfaces
-  - pattern: iface {{ interface_name }} inet manual
-  - repl: ""
-
 ovs_port_up_{{ interface_name }}:
   cmd.run:
   - name: ifup {{ interface_name }}
@@ -237,6 +226,28 @@ linux_network_{{ interface_name }}_routes:
       netmask: {{ route.netmask }}
       gateway: {{ route.gateway }}
     {%- endfor %}
+
+{%- endif %}
+
+{%- endfor %}
+
+{%- for interface_name, interface in network.interface.iteritems() %}
+
+{%- set interface_name = interface.get('name', interface_name) %}
+
+{%- if interface.type == 'ovs_port' %}
+
+ovs_port_{{ interface_name }}_line1:
+  file.replace:
+  - name: /etc/network/interfaces
+  - pattern: auto {{ interface_name }}
+  - repl: ""
+
+ovs_port_{{ interface_name }}_line2:
+  file.replace:
+  - name: /etc/network/interfaces
+  - pattern: iface {{ interface_name }} inet static
+  - repl: ""
 
 {%- endif %}
 
