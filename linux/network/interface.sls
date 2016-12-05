@@ -29,11 +29,19 @@ linux_network_bridge_pkgs:
 {%- if grains.os_family in ['RedHat', 'Debian'] %}
 
 {%- if interface.type == 'ovs_bridge' %}
-
+{#
 ovs_bridge_{{ interface_name }}:
   openvswitch_bridge.present:
   - name: {{ interface_name }}
-
+#}
+ovs_bridge_{{ interface_name }}:
+  file.managed:
+    - name: /etc/network/interfaces.d/ifcfg-{{ interface_name }}
+    - source: salt://linux/files/ovs_bridge
+    - defaults:
+      bridge: {{ interface|yaml }}
+      bridge_name: {{ interface_name }}
+    - template: jinja
 {%- elif interface.type == 'ovs_port' %}
 
 {#
@@ -58,7 +66,7 @@ ovs_port_{{ interface_name }}:
       port: {{ interface|yaml }}
       port_name: {{ interface_name }}
   - template: jinja
-
+{#
 ovs_port_{{ interface_name }}_line1:
   file.replace:
   - name: /etc/network/interfaces
@@ -79,7 +87,7 @@ ovs_port_up_{{ interface_name }}:
     - file: ovs_port_{{ interface_name }}_line1
     - file: ovs_port_{{ interface_name }}_line2
     - openvswitch_bridge: ovs_bridge_{{ interface.bridge }}
-
+#}
 {%- else %}
 
 linux_interface_{{ interface_name }}:

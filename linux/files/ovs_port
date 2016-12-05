@@ -1,4 +1,3 @@
-auto {{ port_name }}
 allow-{{ port.bridge }} {{ port_name }}
 iface {{ port_name }} inet {{ port.get('proto', 'manual') }}
 ovs_type OVSIntPort
